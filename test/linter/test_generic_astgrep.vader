@@ -1,0 +1,23 @@
+Before:
+  " Load the dummy linter; tests will register as needed.
+  call ale#assert#SetUpLinterTest('testft', 'testlinter')
+  " Replace the dummy linter with a defined linter.
+  call ale#linter#Reset()
+  call ale#linter#PreventLoading('python')
+  call ale#astgrep#Define('python')
+
+After:
+  call ale#assert#TearDownLinterTest()
+
+Execute(The default executable path should be correct):
+  AssertLinter 'ast-grep', ale#Escape('ast-grep') . ' lsp'
+
+Execute(The project root should be detected correctly with a configuration file):
+  call ale#test#SetFilename('../test-files/generic/astgrep/subdir/file.py')
+
+  AssertLSPProject ale#path#Simplify(g:dir . '/../test-files/generic/astgrep')
+
+Execute(The project root should be empty when no project files can be detected):
+  call ale#test#SetFilename('../test-files/dummy')
+
+  AssertLSPProject ''
