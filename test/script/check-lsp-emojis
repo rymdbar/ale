@@ -1,0 +1,30 @@
+#!/bin/sh -eu
+
+impl="$(mktemp -t impl.XXXXXXXX)"
+docs="$(mktemp -t docs.XXXXXXXX)"
+
+find ale_linters -name '*.vim' -print | while read -r file; do
+  def=$( sed -n '/call ale#linter#Define/,/\\}[)]/p' "$file" )
+  if ( echo "$def" | grep -q lsp ); then
+    echo "$def" | sed -n "s/call ale#linter#Define.'\(.*\)'.*/<\1>/p" |
+        tr '\n' ' '
+    echo "$def" | sed -n "s/.*'name': '\(.*\)',/\1/p"
+  fi
+done |
+    sed 's/_/-/' |
+    sed 's/^<ada> adals$/<ada> ada-language-server/' |
+    sed 's/^<rust> analyzer$/<rust> rust-analyzer/' |
+    sort > "$impl"
+
+sed -n 's/^* //p' supported-tools.md | while read -r lang; do
+  sed -n "/^* $lang/,/^*/p" supported-tools.md |
+    sed -n "s/.*\[\(.*\)\].*:speech_balloon:/<$lang> \1/p"
+done |
+    sed 's/_/-/' |
+    sed 's/<C.. .filetype cpp.>/<cpp>/' |
+    sed 's/<ReasonML>/<reason>/' |
+    tr '[:upper:]' '[:lower:]' | sort > "$docs"
+
+diff -u "$impl" "$docs"
+
+rm "$impl" "$docs"
