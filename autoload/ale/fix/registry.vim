@@ -22,6 +22,11 @@ let s:default_registry = {
 \       'suggested_filetypes': ['apkbuild'],
 \       'description': 'Fix policy violations found by apkbuild-lint in APKBUILDs',
 \   },
+\   'ast-grep': {
+\       'function': 'ale#fixers#astgrep#Fix',
+\       'suggested_filetypes': [],
+\       'description': 'Apply ast-grep rules.',
+\   },
 \   'autoimport': {
 \       'function': 'ale#fixers#autoimport#Fix',
 \       'suggested_filetypes': ['python'],
