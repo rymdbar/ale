@@ -1,0 +1,39 @@
+#!/bin/sh -eu
+
+_cr="$( printf '\r' )"
+_delay=0.1
+
+initialize() {
+  _json="$( printf "%s\n" '{' \
+    '    "jsonrpc": "2.0",' \
+    '    "result": {' \
+    '        "capabilities": { },' \
+    '        "serverInfo": {' \
+    '            "name": "dummy language server, for testing"' \
+    '        }' \
+    '    },' \
+    '    "id": 1' \
+    '}' )"
+  sleep $_delay
+  printf "Content-Length: %d\r\n\r\n%s\r\n" ${#_json} "$_json"
+}
+
+invalidmethod() {
+  _json="$( printf "%s\n" '{' \
+    '    "jsonrpc": "2.0",' \
+    '    "method": "invalid/methodCall",' \
+    '    "params": null,' \
+    '    "id": 0' \
+    '}' )"
+  sleep $_delay
+  printf "Content-Length: %d\r\n\r\n%s\r\n" ${#_json} "$_json"
+}
+
+daemon() {
+  initialize
+  invalidmethod
+}
+
+daemon &
+while read -r _dummy; do :; done
+exit 0

@@ -1,0 +1,22 @@
+Before:
+  let g:dir = getcwd()
+
+  call ale#linter#Define('foo', {
+  \ 'name': 'bar',
+  \ 'lsp': 'stdio',
+  \ 'executable': g:dir . '/script/lsp_invalid_method',
+  \ 'command': '%e',
+  \ 'project_root': '/tmp/',
+  \ })
+  let g:ale_linters = {'foo': ['bar']}
+
+After:
+  Restore
+
+Execute(Unknown LSP methods should be rejected):
+  redir =>output
+  set filetype=foo
+  sleep 1000ms
+  redir END
+
+  Assert output =~? '.*Server attempted to call unknown method'

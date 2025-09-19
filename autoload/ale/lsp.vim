@@ -409,6 +409,7 @@ function! ale#lsp#HandleMessage(conn_id, message) abort
             " If this was a request that no handler processed, send Method Not Found error
             if !l:handled && has_key(l:response, 'method') && has_key(l:response, 'id')
                 call s:SendMethodNotFoundResponse(a:conn_id, l:response.id, l:response.method)
+                call ale#util#Execute('echom ''Server attempted to call unknown method''')
             endif
         endfor
     endif
