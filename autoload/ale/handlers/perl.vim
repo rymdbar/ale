@@ -14,10 +14,10 @@ function! ale#handlers#perl#GetProjectRoot(buffer) abort
         endif
     endfor
 
-    let l:project_root = ale#path#FindNearestFileOrDirectory(a:buffer, '.git')
+    let l:project_root = ale#path#FindVCSRoot(a:buffer)
 
     if !empty(l:project_root)
-        return fnamemodify(l:project_root . '/', ':p:h:h')
+        return l:project_root
     endif
 
     return fnamemodify(expand('#' . a:buffer . ':p:h'), ':p:h')
